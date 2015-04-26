@@ -1,0 +1,16 @@
+{
+	"ImportPath": "github.com/ShaleApps/gator",
+	"GoVersion": "go1.4",
+	"Deps": [
+		{
+			"ImportPath": "github.com/onsi/gomega/format",
+			"Comment": "v1.0-41-ga91b9a2",
+			"Rev": "a91b9a2e8063d07570320914bfe10a91d9323074"
+		},
+		{
+			"ImportPath": "github.com/onsi/gomega/matchers",
+			"Comment": "v1.0-41-ga91b9a2",
+			"Rev": "a91b9a2e8063d07570320914bfe10a91d9323074"
+		}
+	]
+}

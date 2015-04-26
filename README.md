@@ -1,7 +1,7 @@
 # gator
 
 Struct validation library for go
-
+```
 
                _.'^^'.    
     _      _.-' ((@)) '.   ./\/\/\/\/\/\,.---.__
@@ -13,6 +13,6 @@ Struct validation library for go
             .-----'`   /\              `\    )--.______.______._______`/ 
            (((------'``  `'--------'`(((----'
            
-
+```
 
 Gator (or valigator) is a validation library.

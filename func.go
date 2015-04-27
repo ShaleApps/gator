@@ -8,7 +8,7 @@ import (
 )
 
 const (
-	regexEmail    = `^([a-z0-9_\.-]+)@([\da-z\.-]+)\.([a-z\.]{2,6})$`
+	regexEmail    = `^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$`
 	regexHexColor = `^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$`
 	regexUrl      = `^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$`
 	regexIP       = `^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$`
@@ -16,58 +16,100 @@ const (
 	regexAlpha    = `^[a-zA-Z]*$`
 )
 
+// Func is a validation function that returns an error if v is invalid.
 type Func func(name string, v interface{}) error
 
-type matcher interface {
-	Match(actual interface{}) (success bool, err error)
-}
-
-var Nonzero = func(name string, v interface{}) error {
-	m := &matchers.BeZeroMatcher{}
-	zero, _ := m.Match(v)
-	if zero {
-		return formatError(name)
-	}
-	return nil
-}
-
+// Matches returns a Func that validates against the given regex.
 func Matches(regex string) Func {
 	m := &matchers.MatchRegexpMatcher{Regexp: regex}
 	return match(m)
 }
 
-var Email = Matches(regexEmail)
-var HexColor = Matches(regexHexColor)
-var URL = Matches(regexUrl)
-var IP = Matches(regexIP)
-var Alpha = Matches(regexAlpha)
-var Num = Matches(regexNum)
-var AlphaNum = combineFuncs(Matches("[a-zA-Z]+"), Matches("[0-9]+"))
+// Nonzero returns a Func that validates its value is non-zero.
+// http://golang.org/pkg/reflect/#Zero
+func Nonzero() Func {
+	return func(name string, v interface{}) error {
+		m := &matchers.BeZeroMatcher{}
+		zero, _ := m.Match(v)
+		if zero {
+			return formatError(name)
+		}
+		return nil
+	}
+}
 
+// Email returns a Func that validates its value is an email address.
+func Email() Func {
+	return Matches(regexEmail)
+}
+
+// HexColor returns a Func that validates its value is a hexidecimal number prefixed by a hash.
+// HTML standard link: http://www.w3.org/TR/REC-html40/types.html#h-6.5
+func HexColor() Func {
+	return Matches(regexHexColor)
+}
+
+// URL returns a Func that validates its value is a URL.
+func URL() Func {
+	return Matches(regexUrl)
+}
+
+// IP returns a Func that validates its value is an IP address.
+func IP() Func {
+	return Matches(regexIP)
+}
+
+// Alpha returns a Func that validates its value contains only letters.
+func Alpha() Func {
+	return Matches(regexAlpha)
+}
+
+// Num returns a Func that validates its value contains only numbers.
+func Num() Func {
+	return Matches(regexNum)
+}
+
+// AlphaNum returns a Func that validates its value contains both numbers and letters.
+func AlphaNum() Func {
+	return combineFuncs(Matches("[a-zA-Z]+"), Matches("[0-9]+"))
+}
+
+// Gt returns a Func that validates its value is a number greater than v.
 func Gt(v interface{}) Func {
 	return numericalMatch(">", v)
 }
 
+// Gte returns a Func that validates its value is a number greater than or equal to v.
 func Gte(v interface{}) Func {
 	return numericalMatch(">=", v)
 }
 
+// Lt returns a Func that validates its value is a number less than v.
 func Lt(v interface{}) Func {
 	return numericalMatch("<", v)
 }
 
+// Lte returns a Func that validates its value is a number less than or equal to v.
 func Lte(v interface{}) Func {
 	return numericalMatch("<=", v)
 }
 
-var Lat = combineFuncs(
-	numericalMatch("<=", 90.0),
-	numericalMatch(">=", -90.0))
+// Lat returns a Func that validates its value is a decimal between 90 and -90.
+func Lat() Func {
+	return combineFuncs(
+		numericalMatch("<=", 90.0),
+		numericalMatch(">=", -90.0))
+}
 
-var Lon = combineFuncs(
-	numericalMatch("<=", 180.0),
-	numericalMatch(">=", -180.0))
+// Lon returns a Func that validates its value is a decimal between 180 and -180.
+func Lon() Func {
+	return combineFuncs(
+		numericalMatch("<=", 180.0),
+		numericalMatch(">=", -180.0))
+}
 
+// In returns a Func that validates its value is in the inputed list.  Comparisons
+// use reflect.DeepEqual.
 func In(list []interface{}) Func {
 	return func(k string, v interface{}) error {
 		in := false
@@ -81,6 +123,8 @@ func In(list []interface{}) Func {
 	}
 }
 
+// NotIn returns a Func that validates its value is not in the inputed list.  Comparisons
+// use reflect.DeepEqual.
 func NotIn(list []interface{}) Func {
 	return func(k string, v interface{}) error {
 		for _, e := range list {
@@ -92,6 +136,7 @@ func NotIn(list []interface{}) Func {
 	}
 }
 
+// Len returns a Func that validates its value's length is equal to l.
 func Len(l int) Func {
 	return func(k string, v interface{}) error {
 		length, ok := lengthOf(v)
@@ -102,6 +147,7 @@ func Len(l int) Func {
 	}
 }
 
+// MinLen returns a Func that validates its value's length is greater than or equal to l.
 func MinLen(l int) Func {
 	return func(k string, v interface{}) error {
 		length, ok := lengthOf(v)
@@ -112,6 +158,7 @@ func MinLen(l int) Func {
 	}
 }
 
+// MaxLen returns a Func that validates its value's length is less than or equal to l.
 func MaxLen(l int) Func {
 	return func(k string, v interface{}) error {
 		length, ok := lengthOf(v)
@@ -122,6 +169,7 @@ func MaxLen(l int) Func {
 	}
 }
 
+// Each returns a Func that validates the list of functions for each element in an array or slice.
 func Each(funcs ...Func) Func {
 	return func(k string, v interface{}) error {
 		if !isArrayOrSlice(v) {
@@ -138,6 +186,10 @@ func Each(funcs ...Func) Func {
 		}
 		return nil
 	}
+}
+
+type matcher interface {
+	Match(actual interface{}) (success bool, err error)
 }
 
 func numericalMatch(comparator string, v interface{}) Func {

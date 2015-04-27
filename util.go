@@ -5,17 +5,18 @@ import (
 	"reflect"
 )
 
-func isStructOrStructPtr(src interface{}) error {
+func getReflectInfo(src interface{}) (reflect.Type, reflect.Value, error) {
 	objT := reflect.TypeOf(src)
 	objV := reflect.ValueOf(src)
 	switch {
-	case isStruct(objT), isStructPtr(objT):
+	case isStruct(objT):
+	case isStructPtr(objT):
 		objT = objT.Elem()
 		objV = objV.Elem()
 	default:
-		return errors.New("gator: src must be a struct or a pointer to a struct")
+		return objT, objV, errors.New("gator: src must be a struct or a pointer to a struct")
 	}
-	return nil
+	return objT, objV, nil
 }
 
 func isStruct(t reflect.Type) bool {

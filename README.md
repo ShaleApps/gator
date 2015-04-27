@@ -14,6 +14,7 @@
            
 ```
 [![GoDoc](https://godoc.org/github.com/ShaleApps/gator?status.svg)](https://godoc.org/github.com/ShaleApps/gator)
+
 Gator (or valigator) is a library that validates structs using struct tags.  Here is a usage example:
 
 

@@ -22,8 +22,7 @@ package gator (or valigator) is a library that validates structs using struct ta
     b := &BigStruct{
         Password: "TOOOOOOOOOOOOOOO LONG",
     }
-    g, _ := gator.NewStruct(b)
-    if err := g.Validate(); err != nil {
+    if err := gator.NewStruct(b).Validate(); err != nil {
         fmt.Println(err)
     }
 
@@ -37,7 +36,7 @@ Validation logic can be deserialized by gator using a query string:
         Url:      "https//news.ycombinator.com",
         Username: "hello1",
     },
-    g, err := gator.NewQueryStr(website, "Url=url&Username=alphanum|minlen(5)|maxlen(10)")
+    g := gator.NewQueryStr(website, "Url=url&Username=alphanum|minlen(5)|maxlen(10)")
     if err := g.Validate(); err != nil {
         fmt.Println(err)
     }
@@ -55,8 +54,7 @@ Custom tags can be added.  Tokens are added statically and affect all Gators.  H
         Email:    "gator@example.com",
         Password: "ASDF12345",
     }
-    g, _ := gator.NewStruct(u)
-    if err := g.Validate(); err != nil {
+    if err := gator.NewStruct(u).Validate(); err != nil {
         fmt.Println(err)
     }
 

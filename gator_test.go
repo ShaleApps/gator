@@ -65,20 +65,12 @@ var invalidStructs = []interface{}{
 
 func TestStructs(t *testing.T) {
 	for _, v := range validStructs {
-		g, err := gator.NewStruct(v)
-		if err != nil {
-			t.Error(err)
-		}
-		if err := g.Validate(); err != nil {
+		if err := gator.NewStruct(v).Validate(); err != nil {
 			t.Errorf("struct should be valid: %+v %s", v, err)
 		}
 	}
 	for _, v := range invalidStructs {
-		g, err := gator.NewStruct(v)
-		if err != nil {
-			t.Error(err)
-		}
-		if err := g.Validate(); err == nil {
+		if err := gator.NewStruct(v).Validate(); err == nil {
 			t.Errorf("struct should be invalid: %+v", v)
 		}
 	}
@@ -222,21 +214,13 @@ var (
 
 func TestQueryStr(t *testing.T) {
 	for _, queryTest := range validQueries {
-		g, err := gator.NewQueryStr(queryTest.Src, queryTest.QueryStr)
-		if err != nil {
-			t.Error(err)
-		}
-		if err := g.Validate(); err != nil {
+		if err := gator.NewQueryStr(queryTest.Src, queryTest.QueryStr).Validate(); err != nil {
 			t.Errorf("%+v should have been valid, but produced an error: %s", queryTest.Src, err)
 		}
 	}
 
 	for _, queryTest := range invalidQueries {
-		g, err := gator.NewQueryStr(queryTest.Src, queryTest.QueryStr)
-		if err != nil {
-			t.Error(err)
-		}
-		if err := g.Validate(); err == nil {
+		if err := gator.NewQueryStr(queryTest.Src, queryTest.QueryStr).Validate(); err == nil {
 			t.Errorf("%+v should have been invalid, but failed to produce an error", queryTest.Src)
 		}
 	}
@@ -254,8 +238,7 @@ func TestRegister(t *testing.T) {
 		Email:    "gator@example.com",
 		Password: "ASDF12345",
 	}
-	g, _ := gator.NewStruct(u)
-	if err := g.Validate(); err == nil {
+	if err := gator.NewStruct(u).Validate(); err == nil {
 		t.Errorf("%+v should have been invalid, but failed to produce an error", u)
 	}
 }

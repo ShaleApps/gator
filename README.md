@@ -1,18 +1,6 @@
 # gator
 
-```
-
-               _.'^^'.    
-    _      _.-' ((@)) '.   ./\/\/\/\/\/\,.---.__
- ..'o'...-'      ~~~    '~/\/\/\/\/\/\__.---.   `-._
-:                          /\/\/\/\,-'              `-.__   
-^VvvvvvvvvvvVvVv                   |                     `-._
-  ;^^^^^^^^^^^`      /             `\        /               `-._
-   ```````````````'.`                `\     (                    `'-._
-            .-----'`   /\              `\    )--.______.______._______`/ 
-           (((------'``  `'--------'`(((----'
-           
-```
+![Gator](https://raw.github.com/ShaleApps/gator/master/gator.png)
 [![GoDoc](https://godoc.org/github.com/ShaleApps/gator?status.svg)](https://godoc.org/github.com/ShaleApps/gator)
 
 Gator (or valigator) is a library that validates structs using struct tags.  Here is a usage example:
@@ -40,8 +28,7 @@ type BigStruct struct {
 b := &BigStruct{
 	Password: "TOOOOOOOOOOOOOOO LONG",
 }
-g, _ := gator.NewStruct(b)
-if err := g.Validate(); err != nil {
+if err := gator.NewStruct(b).Validate(); err != nil {
     fmt.Println(err)
 }
 ```
@@ -57,7 +44,7 @@ website := &WebsiteListing{
     Url:      "https//news.ycombinator.com",
     Username: "hello1",
 },
-g, err := gator.NewQueryStr(website, "Url=url&Username=alphanum|minlen(5)|maxlen(10)")
+g := gator.NewQueryStr(website, "Url=url&Username=alphanum|minlen(5)|maxlen(10)")
 if err := g.Validate(); err != nil {
     fmt.Println(err)
 }
@@ -77,8 +64,7 @@ u := &User{
     Email:    "gator@example.com",
     Password: "ASDF12345",
 }
-g, _ := gator.NewStruct(u)
-if err := g.Validate(); err != nil {
+if err := gator.NewStruct(u).Validate(); err != nil {
     fmt.Println(err)
 }
 ```

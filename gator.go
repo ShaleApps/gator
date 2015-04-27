@@ -22,20 +22,22 @@ type Gator struct {
 }
 
 // New creates an initialized Gator.
-func New() *Gator {
+func New(options ...func(*Gator)) *Gator {
 	return &Gator{vals: []Validator{}}
 }
 
 // NewStruct generates validation fields based on src's gator struct
 // tags and adds them to the returned gator.  If src isn't a struct
-// or pointer to a struct an error is returned.
-func NewStruct(src interface{}) (*Gator, error) {
+// or pointer to a struct an error will be returned from the Validation
+// method.
+func NewStruct(src interface{}) *Gator {
+	g := New()
 	objT, objV, err := getReflectInfo(src)
 	if err != nil {
-		return nil, err
+		g.Add(errValidator{err: err})
+		return g
 	}
 
-	g := New()
 	for i := 0; i < objT.NumField(); i++ {
 		field := objT.Field(i)
 		tag := field.Tag.Get(structTagKey)
@@ -47,25 +49,28 @@ func NewStruct(src interface{}) (*Gator, error) {
 			g.Add(NewField(name, value, f))
 		}
 	}
-	return g, nil
+	return g
 }
 
 // NewQueryStr generates validation fields by parsing queryStr using
-// url.ParseQuery and adds them to the returned gator.  An error is
-// returned if the queryStr can't be parsed or if src isn't a struct
-// or pointer to a struct.
-func NewQueryStr(src interface{}, queryStr string) (*Gator, error) {
+// url.ParseQuery and adds them to the returned gator.  If the queryStr
+// can't be parsed or if src isn't a struct or pointer to a struct an
+// error will be returned in the validate function.
+func NewQueryStr(src interface{}, queryStr string) *Gator {
+	g := New()
 	m, err := url.ParseQuery(queryStr)
 	if err != nil {
-		return nil, fmt.Errorf("gator: couldn't parse QueryStr - %s", err)
+		err = fmt.Errorf("gator: couldn't parse QueryStr - %s", err)
+		g.Add(errValidator{err: err})
+		return g
 	}
 
 	objT, objV, err := getReflectInfo(src)
 	if err != nil {
-		return nil, err
+		g.Add(errValidator{err: err})
+		return g
 	}
 
-	g := New()
 	for i := 0; i < objT.NumField(); i++ {
 		name := objT.Field(i).Name
 		value := objV.Field(i).Interface()
@@ -80,7 +85,7 @@ func NewQueryStr(src interface{}, queryStr string) (*Gator, error) {
 			}
 		}
 	}
-	return g, nil
+	return g
 }
 
 // Add adds Validators to the Gator.
@@ -256,4 +261,12 @@ func captureString(s string) string {
 		return ""
 	}
 	return strings.TrimSpace(s[start+1 : end])
+}
+
+type errValidator struct {
+	err error
+}
+
+func (e errValidator) Validate() error {
+	return e.err
 }

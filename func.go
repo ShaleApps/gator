@@ -10,7 +10,7 @@ import (
 const (
 	regexEmail    = `^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$`
 	regexHexColor = `^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$`
-	regexUrl      = `^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$`
+	regexURL      = `^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$`
 	regexIP       = `^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$`
 	regexNum      = `^[1-9]\d*(\.\d+)?$`
 	regexAlpha    = `^[a-zA-Z]*$`
@@ -51,7 +51,7 @@ func HexColor() Func {
 
 // URL returns a Func that validates its value is a URL.
 func URL() Func {
-	return Matches(regexUrl)
+	return Matches(regexURL)
 }
 
 // IP returns a Func that validates its value is an IP address.

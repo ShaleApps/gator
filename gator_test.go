@@ -16,7 +16,7 @@ type testStruct2 struct {
 }
 
 type testStruct3 struct {
-	Url      string `gator:"url"`
+	URL      string `gator:"url"`
 	Username string `gator:"alphanum | minlen(5) | maxlen(10)"`
 }
 
@@ -187,9 +187,9 @@ type queryTest struct {
 var (
 	validQueries = []*queryTest{
 		&queryTest{
-			QueryStr: `Url=url&Username=alphanum|minlen(5)|maxlen(10)`,
+			QueryStr: `URL=url&Username=alphanum|minlen(5)|maxlen(10)`,
 			Src: &testStruct3{
-				Url:      "https://news.ycombinator.com",
+				URL:      "https://news.ycombinator.com",
 				Username: "hello1",
 			},
 		},
@@ -197,23 +197,23 @@ var (
 
 	invalidQueries = []*queryTest{
 		&queryTest{
-			QueryStr: `Url=url&Username=alphanum|minlen(5)|maxlen(10)`,
+			QueryStr: `URL=url&Username=alphanum|minlen(5)|maxlen(10)`,
 			Src: &testStruct3{
-				Url:      "https//news.ycombinator.com",
+				URL:      "https//news.ycombinator.com",
 				Username: "hello1",
 			},
 		},
 		&queryTest{
-			QueryStr: `Url=url&Username=alphanum|minlen(5)|maxlen(10)`,
+			QueryStr: `URL=url&Username=alphanum|minlen(5)|maxlen(10)`,
 			Src: &testStruct3{
-				Url:      "https://news.ycombinator.com",
+				URL:      "https://news.ycombinator.com",
 				Username: "hello",
 			},
 		},
 		&queryTest{
-			QueryStr: `Url=minlen(sss)`,
+			QueryStr: `URL=minlen(sss)`,
 			Src: &testStruct3{
-				Url:      "https//news.ycombinator.com",
+				URL:      "https//news.ycombinator.com",
 				Username: "hello1",
 			},
 		},

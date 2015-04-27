@@ -1,5 +1,5 @@
 /*
-Gator (or valigator) is a library that validates structs using struct tags.  Here is a usage example:
+package gator (or valigator) is a library that validates structs using struct tags.  Here is a usage example:
 
     // NOTE: Gator tags will only be recognized on fields that are public.
     type BigStruct struct {

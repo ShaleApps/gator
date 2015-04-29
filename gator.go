@@ -139,6 +139,7 @@ var (
 
 func init() {
 	RegisterStructTagToken("nonzero", func(s string) Func { return Nonzero() })
+	RegisterStructTagToken("eq", func(s string) Func { return Eq(s) })
 	RegisterStructTagToken("email", func(s string) Func { return Email() })
 	RegisterStructTagToken("hexcolor", func(s string) Func { return HexColor() })
 	RegisterStructTagToken("url", func(s string) Func { return URL() })

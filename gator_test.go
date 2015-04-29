@@ -36,6 +36,12 @@ type testStruct6 struct {
 	Lon float64 `gator:"lon"`
 }
 
+type testStruct7 struct {
+	Eq1 string `gator:"eq(abc123)"`
+	Eq2 string `gator:"eq(1)"`
+	Eq3 int    `gator:"eq(1)"`
+}
+
 var validStructs = []interface{}{
 	testStruct1{"a"},
 	testStruct2{"loganjspears@gmail.com", "#ffffff"},
@@ -45,6 +51,7 @@ var validStructs = []interface{}{
 	testStruct5{[]int{19, 20, 21}},
 	testStruct6{0.0, 0.0},
 	testStruct6{90.0, -180.0},
+	testStruct7{"abc123", "1", 1},
 }
 
 var invalidStructs = []interface{}{
@@ -117,6 +124,9 @@ var (
 		gator.NewField("test", []int{1, 2, 3}, gator.MaxLen(3)),
 		gator.NewField("test", []string{"1", "12", "123"}, gator.Each(gator.MaxLen(3))),
 		gator.NewField("test", []int{1, 2, 3}, gator.Each(gator.Gt(0))),
+		gator.NewField("test", 1, gator.Eq(1.0)),
+		gator.NewField("test", "hello", gator.Eq("hello")),
+		gator.NewField("test", "1", gator.Eq("1")),
 	}
 
 	invalidFields = []*gator.Field{
@@ -155,6 +165,8 @@ var (
 		gator.NewField("test", []int{1, 2, 3}, gator.MaxLen(-1)),
 		gator.NewField("test", []string{"1", "12", "123"}, gator.Each(gator.MaxLen(1))),
 		gator.NewField("test", []int{1, 2, 3}, gator.Each(gator.Lt(3))),
+		gator.NewField("test", -1, gator.Eq(1.0)),
+		gator.NewField("test", "hello", gator.Eq("hell0")),
 	}
 )
 

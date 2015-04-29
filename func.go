@@ -3,6 +3,7 @@ package gator
 import (
 	"errors"
 	"reflect"
+	"strconv"
 
 	"github.com/ShaleApps/gator/Godeps/_workspace/src/github.com/onsi/gomega/matchers"
 )
@@ -33,6 +34,34 @@ func Nonzero() Func {
 		zero, _ := m.Match(v)
 		if zero {
 			return formatError(name)
+		}
+		return nil
+	}
+}
+
+// Eq returns a Func that validates its value is equal to v.  Eq uses a numerical
+// comparison for built-in number types.  For example 1.0 of type float64 would equal
+// 1 of type int.  All other types are compared using reflect.DeepEquals except when
+// the value is a built-in number type and v is a string.  Strings are converted into
+// numbers if parsable to support struct tags.
+func Eq(v interface{}) Func {
+	return func(k string, ov interface{}) error {
+		switch ov.(type) {
+		case int, int8, int16, int32, int64, uint, uint8, uint16, uint32, uint64, float32, float64:
+			switch vt := v.(type) {
+			case string:
+				n, err := strconv.ParseFloat(vt, 64)
+				if err != nil {
+					return formatError(k)
+				}
+				f := numericalMatch("==", n)
+				return f(k, ov)
+			}
+			f := numericalMatch("==", v)
+			return f(k, ov)
+		}
+		if !reflect.DeepEqual(v, ov) {
+			return formatError(k)
 		}
 		return nil
 	}
